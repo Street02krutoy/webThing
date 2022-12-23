@@ -16,7 +16,7 @@ public class Client {
         server = HttpServer.create(new InetSocketAddress(port), 1);
 
         if(test)
-            new AbstractRouteClass(this){
+            new AbstractRoute(this){
                 @Route(method = HttpMethods.GET, name = "/")
                 @Override
                 public void callback(HttpRequest req, HttpResponse res) {

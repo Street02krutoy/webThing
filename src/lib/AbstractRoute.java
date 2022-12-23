@@ -9,9 +9,9 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-public abstract class AbstractRouteClass  {
+public abstract class AbstractRoute {
     public abstract void callback(HttpRequest req, HttpResponse res);
-    public AbstractRouteClass(Client client) throws Exception {
+    public AbstractRoute(Client client) throws Exception {
         checkAnnotations(client);
     }
 
@@ -32,7 +32,7 @@ public abstract class AbstractRouteClass  {
 
     public void checkAnnotations(Client client)  throws Exception {
 
-        Class<AbstractRouteClass> annotatedMethodsClass = (Class<AbstractRouteClass>) this.getClass();
+        Class<AbstractRoute> annotatedMethodsClass = (Class<AbstractRoute>) this.getClass();
 
         for (Method method : annotatedMethodsClass.getDeclaredMethods()) {
 
