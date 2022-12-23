@@ -11,15 +11,16 @@ import java.net.InetSocketAddress;
 public class Client {
     private final HttpServer server;
 
-    public Client(Boolean test) throws Exception {
+    public Client(Boolean test, int port) throws Exception {
 
-        server = HttpServer.create(new InetSocketAddress(4000), 1);
+        server = HttpServer.create(new InetSocketAddress(port), 1);
 
         if(test)
             new AbstractRouteClass(this){
                 @Route(method = HttpMethods.GET, name = "/")
                 @Override
                 public void callback(HttpRequest req, HttpResponse res) {
+                    System.out.println(req.getBody());
                     try {
                         res.send("Hello, World");
                     }catch (IOException e) {
@@ -28,6 +29,7 @@ public class Client {
                 }
             };
         server.start();
+        System.out.printf("Started on %s", port);
     }
 
     public HttpServer getServer() {

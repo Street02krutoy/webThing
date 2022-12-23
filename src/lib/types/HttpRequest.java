@@ -1,5 +1,8 @@
 package lib.types;
 
+import org.json.JSONObject;
+
 public interface HttpRequest {
-    public final String method = "GET";
+    public String getMethod();
+    public JSONObject getBody();
 }
