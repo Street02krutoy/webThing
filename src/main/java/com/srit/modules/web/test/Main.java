@@ -1,9 +1,6 @@
 package com.srit.modules.web.test;
 
-import com.srit.modules.web.lib.Client;
-import com.srit.modules.web.lib.RequireAuthorisation;
-import com.srit.modules.web.lib.Route;
-import com.srit.modules.web.lib.RouteSettings;
+import com.srit.modules.web.lib.*;
 import com.srit.modules.web.lib.types.AuthorizationChecker;
 import com.srit.modules.web.lib.types.FileResponse;
 import com.srit.modules.web.lib.types.HttpRequest;
@@ -17,16 +14,11 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            client=new Client(4000, new AuthorizationChecker() {
-                @Override
-                public boolean check(HttpRequest req) {
-                    return req.getQuery().get("a").equals("b");
-                }
-            });
-            System.out.println("Started om 4000");
+            client=new Client(4000, req -> req.getQuery().get("a").equals("b"));
+            System.out.println("Started on 4000");
             new Route(client){
-
                 @Override
+                @BodyKey(key = "a", value = BodyTypes.STRING)
                 @RequireAuthorisation
                 @RouteSettings(name = "/", method = "GET")
                 protected void callback(HttpRequest req, HttpResponse res) {
