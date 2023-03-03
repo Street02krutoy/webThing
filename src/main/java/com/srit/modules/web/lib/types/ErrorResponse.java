@@ -3,7 +3,7 @@ package com.srit.modules.web.lib.types;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ErrorResponse extends Response {
+public class ErrorResponse extends JsonResponse {
     private Map<Integer, String> messages = new HashMap<>(){{
         put(200, "OK");
         put(202, "Accepted");
@@ -16,11 +16,11 @@ public class ErrorResponse extends Response {
 
     public ErrorResponse(int code) {
         super();
-        this.setCode(code).put("error", new Response().put("message", messages.get(code)).put("code", code));
+        this.put("error", new JsonResponse().put("message", messages.get(code)).put("code", code)).setCode(code);
     }
 
     public ErrorResponse(int code, String message) {
         super();
-        this.put("error", new Response().put("message", message).put("code", code)).setCode(code);
+        this.put("error", new JsonResponse().put("message", message).put("code", code)).setCode(code);
     }
 }

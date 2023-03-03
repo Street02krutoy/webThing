@@ -1,10 +1,7 @@
 package com.srit.modules.web.lib;
 
 
-import com.srit.modules.web.lib.types.ErrorResponse;
-import com.srit.modules.web.lib.types.HttpRequest;
-import com.srit.modules.web.lib.types.HttpResponse;
-import com.srit.modules.web.lib.types.Response;
+import com.srit.modules.web.lib.types.*;
 import com.sun.net.httpserver.Headers;
 import org.json.JSONObject;
 
@@ -14,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Level;
 
 public abstract class Route {
     protected abstract void callback(HttpRequest req, HttpResponse res);
@@ -76,16 +72,21 @@ public abstract class Route {
                                     data = new ErrorResponse(500);
                                 };
                                 OutputStream outputStream = exchange.getResponseBody();
-                                String newdata = data.toString();
-
+                                String newdata;
+                                try {
+                                    newdata = data.getResponse();
+                                } catch (IOException e) {
+                                    newdata = new ErrorResponse(500).getResponse();
+                                }
+                                System.out.println(data.getCode());
 
                                 try {
                                     exchange.sendResponseHeaders(data.getCode(), newdata.length());
                                     outputStream.write(newdata.getBytes());
                                     outputStream.flush();
                                     outputStream.close();
-                                } catch (IOException ignored) {
-
+                                } catch (IOException e) {
+                                    System.out.println(e.getMessage());
                                 }
                             }
 

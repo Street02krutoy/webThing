@@ -1,6 +1,7 @@
 package com.srit.modules.web.lib;
 
 import com.srit.modules.web.lib.types.AuthorizationChecker;
+import com.srit.modules.web.lib.types.HttpRequest;
 import com.sun.net.httpserver.HttpServer;
 
 import java.net.InetSocketAddress;
@@ -12,7 +13,12 @@ public class Client {
 
     public Client(int port, AuthorizationChecker checker) throws Exception {
         server = HttpServer.create(new InetSocketAddress(port), 1);
-        this.checker=checker;
+        this.checker= (checker != null) ? checker : new AuthorizationChecker() {
+            @Override
+            public boolean check(HttpRequest req) {
+                return true;
+            }
+        };
         server.start();
     }
 
