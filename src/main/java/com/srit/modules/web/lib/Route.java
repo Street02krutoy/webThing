@@ -68,6 +68,10 @@ public abstract class Route {
                         HttpResponse res = new HttpResponse() {
                             @Override
                             public void send(Response data) {
+                                data.getHeaders().forEach((key, value)-> {
+                                    exchange.getResponseHeaders().add(key, value);
+                                });
+
                                 if(data.getCode() == 0) {
                                     data = new ErrorResponse(500);
                                 };
