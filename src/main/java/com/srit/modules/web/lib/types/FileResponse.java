@@ -6,7 +6,9 @@ public class FileResponse extends Response {
 
     private File file;
 
-    public FileResponse() {}
+    public FileResponse() {
+
+    }
 
     @Override
     public String getResponse() throws IOException {
@@ -21,7 +23,24 @@ public class FileResponse extends Response {
         return res.toString();
     }
 
-    public FileResponse setFile(File file) {
+    public FileResponse setBinaryFile(File file) {
+        this.file = file;
+
+        this.setHeader("Content-Disposition", "form-data; name=\"binaryFile\"; filename=\"" + file.getName() + "\"");
+        this.setHeader("Content-Type", "application/octet-stream" );
+        this.setHeader("Content-Transfer-Encoding", "binary");
+
+        return this;
+    }
+
+    public FileResponse setTextFile(File file) {
+        this.file = file;
+        this.setHeader("Content-Disposition", "form-data; name=\"textFile\"; filename=\"" + file.getName() + "\"");
+        this.setHeader("Content-Type", "text/plain" );
+        return this;
+    }
+
+    public FileResponse setHtmlFile(File file) {
         this.file = file;
         return this;
     }

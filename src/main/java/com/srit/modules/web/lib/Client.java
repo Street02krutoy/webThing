@@ -13,12 +13,7 @@ public class Client {
 
     public Client(int port, AuthorizationChecker checker) throws Exception {
         server = HttpServer.create(new InetSocketAddress(port), 1);
-        this.checker= (checker != null) ? checker : new AuthorizationChecker() {
-            @Override
-            public boolean check(HttpRequest req) {
-                return true;
-            }
-        };
+        this.checker= (checker != null) ? checker : req -> true;
         server.start();
     }
 

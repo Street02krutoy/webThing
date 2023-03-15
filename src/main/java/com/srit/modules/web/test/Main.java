@@ -18,11 +18,14 @@ public class Main {
             System.out.println("Started on 4000");
             new Route(client){
                 @Override
-                @BodyKey(key = "a", value = BodyTypes.STRING)
-                @RequireAuthorisation
+                //@BodyKey(key = "a", value = BodyTypes.STRING)
+                //@RequireAuthorisation
                 @RouteSettings(name = "/", method = "GET")
                 protected void callback(HttpRequest req, HttpResponse res) {
-                    res.send(new FileResponse().setFile(getResourceFile("index.html")).setCode(200));
+                    if(req.getQuery().get("file").equals("html"))
+                        res.send(new FileResponse().setHtmlFile(getResourceFile("index.html")).setCode(200));
+                    else if (req.getQuery().get("file").equals("text"))
+                        res.send(new FileResponse().setTextFile(getResourceFile("txt.txt")).setCode(200));
                 }
             };
         } catch (Exception e) {
