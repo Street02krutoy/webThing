@@ -1,31 +1,36 @@
 package com.srit.modules.web.test;
 
 import com.srit.modules.web.lib.*;
-import com.srit.modules.web.lib.types.AuthorizationChecker;
-import com.srit.modules.web.lib.types.FileResponse;
-import com.srit.modules.web.lib.types.HttpRequest;
-import com.srit.modules.web.lib.types.HttpResponse;
+import com.srit.modules.web.lib.types.*;
+import com.srit.modules.web.test.prehandlers.RequireAuthorisation;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
     public static Client client;
 
     public static void main(String[] args) {
         try {
-            client=new Client(4000, req -> req.getQuery().get("a").equals("b"));
+            Map<Class<? extends Annotation>, PreHandler> preHandlers = new HashMap<>();
+            preHandlers.put(RequireAuthorisation.class, req -> {
+                if(req.getQuery().get("a").equals("b")) return null;
+                return new ErrorResponse(401);
+            });
+
+            client=new Client(4000, preHandlers);
             System.out.println("Started on 4000");
             new Route(client){
                 @Override
                 //@BodyKey(key = "a", value = BodyTypes.STRING)
-                //@RequireAuthorisation
+                @RequireAuthorisation
                 @RouteSettings(name = "/", method = "GET")
                 protected void callback(HttpRequest req, HttpResponse res) {
-                    if(req.getQuery().get("file").equals("html"))
-                        res.send(new FileResponse().setHtmlFile(getResourceFile("index.html")).setCode(200));
-                    else if (req.getQuery().get("file").equals("text"))
-                        res.send(new FileResponse().setTextFile(getResourceFile("txt.txt")).setCode(200));
+                    res.send(null);
+                    //res.send(new JsonResponse().put("hello","world").setCode(200));
                 }
             };
         } catch (Exception e) {

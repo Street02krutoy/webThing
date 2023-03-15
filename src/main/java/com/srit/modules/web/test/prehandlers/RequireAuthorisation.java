@@ -1,4 +1,4 @@
-package com.srit.modules.web.lib;
+package com.srit.modules.web.test.prehandlers;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

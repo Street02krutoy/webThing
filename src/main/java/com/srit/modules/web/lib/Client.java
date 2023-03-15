@@ -1,24 +1,25 @@
 package com.srit.modules.web.lib;
 
-import com.srit.modules.web.lib.types.AuthorizationChecker;
-import com.srit.modules.web.lib.types.HttpRequest;
+import com.srit.modules.web.lib.types.PreHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import java.lang.annotation.Annotation;
 import java.net.InetSocketAddress;
+import java.util.Map;
 
 public class Client {
     private final HttpServer server;
 
-    private final AuthorizationChecker checker;
+    private final Map<Class<? extends Annotation>, PreHandler> preHandlerMap;
 
-    public Client(int port, AuthorizationChecker checker) throws Exception {
+    public Client(int port, Map<Class<? extends Annotation>, PreHandler> preHandlerMap) throws Exception {
         server = HttpServer.create(new InetSocketAddress(port), 1);
-        this.checker= (checker != null) ? checker : req -> true;
+        this.preHandlerMap = preHandlerMap;
         server.start();
     }
 
-    public AuthorizationChecker getChecker() {
-        return checker;
+    public Map<Class<? extends Annotation>, PreHandler> getPreHandlerMap() {
+        return preHandlerMap;
     }
 
     public HttpServer getServer() {
