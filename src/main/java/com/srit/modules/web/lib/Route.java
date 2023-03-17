@@ -15,8 +15,14 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class Route {
+
+    Client client;
     protected abstract void callback(HttpRequest req, HttpResponse res);
     public Route(Client client) {
+        this.client = client;
+    }
+
+    public void enable(){
         try {
             checkAnnotations(client);
         } catch (NoSuchMethodException e) {
@@ -42,7 +48,7 @@ public abstract class Route {
     private String path = null;
     private String httpMethod = null;
 
-    public void remove(Client client) {
+    public void disable() {
         if(path != null) client.getServer().removeContext(path);
     }
 

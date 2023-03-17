@@ -1,7 +1,9 @@
 package com.srit.modules.web.test;
 
 import com.srit.modules.web.lib.*;
+import com.srit.modules.web.lib.Module;
 import com.srit.modules.web.lib.types.*;
+import com.srit.modules.web.test.modules.Test;
 import com.srit.modules.web.test.prehandlers.RequireAuthorisation;
 
 import java.io.File;
@@ -15,24 +17,11 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            Map<Class<? extends Annotation>, PreHandler> preHandlers = new HashMap<>();
-            preHandlers.put(RequireAuthorisation.class, req -> {
-                if(req.getQuery().get("a").equals("b")) return null;
-                return new ErrorResponse(401);
-            });
+            Client client = new Client(4000);
+            Module test = new Test(client);
 
-            client=new Client(4000, preHandlers);
-            System.out.println("Started on 4000");
-            new Route(client){
-                @Override
-                //@BodyKey(key = "a", value = BodyTypes.STRING)
-                @RequireAuthorisation
-                @RouteSettings(name = "/", method = "GET")
-                protected void callback(HttpRequest req, HttpResponse res) {
-                    res.send(null);
-                    //res.send(new JsonResponse().put("hello","world").setCode(200));
-                }
-            };
+            test.enable();
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.exit(0);
