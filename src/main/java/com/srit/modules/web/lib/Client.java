@@ -12,11 +12,28 @@ public class Client {
     private final HttpServer server;
 
     private final Map<Class<? extends Annotation>, PreHandler> preHandlerMap;
+    private final Map<String, Module> modules;
 
     public Client(int port) throws Exception {
         server = HttpServer.create(new InetSocketAddress(port), 1);
         this.preHandlerMap =new HashMap<>();
+        this.modules = new HashMap<>();
+    }
+
+    public void enable() {
         server.start();
+    }
+
+    public void addModule(String id, Module module) {
+        modules.put(id, module);
+    }
+
+    public void enableModule(String id) {
+        modules.get(id).enable();
+    }
+
+    public void disableModule(String id) {
+        modules.get(id).disable();
     }
 
     public Map<Class<? extends Annotation>, PreHandler> getPreHandlerMap() {

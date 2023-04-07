@@ -3,7 +3,7 @@ package com.srit.modules.web.lib;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Module {
+public abstract class Module {
     private List<Route> routes = new ArrayList<>();
 
     private boolean enabled = false;
