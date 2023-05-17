@@ -6,9 +6,11 @@ import com.srit.modules.web.lib.types.ErrorResponse;
 import com.srit.modules.web.lib.types.HttpRequest;
 import com.srit.modules.web.lib.types.HttpResponse;
 import com.srit.modules.web.lib.types.JsonResponse;
+import com.srit.modules.web.test.authorizationservice.Database;
 import com.srit.modules.web.test.authorizationservice.model.PrivateUser;
 import com.srit.modules.web.test.authorizationservice.model.PublicUser;
 
+import java.sql.SQLException;
 import java.util.Objects;
 
 public class AuthorizationModule extends Module {
@@ -22,7 +24,7 @@ public class AuthorizationModule extends Module {
                     res.send(new ErrorResponse(401));
                     return;
                 };
-                PublicUser user = getPublicUserByToken(token);
+                PublicUser user = getPrivateUserByEmail(token.split(";")[0]).toPublicUser();
                 if(user == null) {
                     res.send(new ErrorResponse(403));
                     return;
@@ -44,36 +46,45 @@ public class AuthorizationModule extends Module {
                 res.send(new JsonResponse().put("token", token).setCode(200));
             }
         });
+
+        enable();
+
+        System.out.println("Authorization module has successfully initiated!");
+
     }
 
     private PrivateUser getPrivateUserByNickname(String nickname) {
-        if(Objects.equals(nickname, "asd")) return null;
-        return new PrivateUser();
+        try {
+            return Database.getUserByNickname(nickname);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     private String authorize(String email, String password) {
-        if(Objects.equals(email, "asd")) return null;
-        if(Objects.equals(password, "asd")) return null;
-        return "";
+        try {
+            PublicUser user = Database.getUserByEmail(email);
+            return email+";"+password;
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     private PrivateUser getPrivateUserByEmail(String email) {
-        if(Objects.equals(email, "asd")) return null;
-        return new PrivateUser();
-    }
 
-    private PrivateUser getPrivateUserByToken(String token){
-        if(Objects.equals(token, "asd")) return null;
-        return new PrivateUser();
+        try {
+            return Database.getUserByEmail(email);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     private PublicUser getPublicUser(String nickname){
-        if(Objects.equals(nickname, "asd")) return null;
-        return new PublicUser();
-    }
+        try {
+            return Database.getUserByNickname(nickname).toPublicUser();
+        } catch (SQLException e) {
+            return null;
+        }
 
-    private PublicUser getPublicUserByToken(String token) {
-        if(Objects.equals(token, "asd")) return null;
-        return new PublicUser();
     }
 }

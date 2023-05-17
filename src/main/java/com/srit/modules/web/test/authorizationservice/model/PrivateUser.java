@@ -14,4 +14,24 @@ public class PrivateUser extends PublicUser{
     public JsonResponse toJsonResponse() {
         return super.toJsonResponse().put("password", password).put("email", email);
     }
+
+    public PublicUser toPublicUser(){
+        return (PublicUser) this;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
