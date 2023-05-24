@@ -85,24 +85,28 @@ public abstract class Route {
                     HttpResponse res = new HttpResponse() {
                         @Override
                         public void send(Response data) {
-                            data.getHeaders().forEach((key, value)-> {
-                                exchange.getResponseHeaders().add(key, value);
-                            });
-
+                            data.getHeaders().forEach((key, value)-> exchange.getResponseHeaders().add(key, value));
+                            Response newdata = data;
                             if(data.getCode() == 0) {
-                                data = new ErrorResponse(500);
+                                newdata = new ErrorResponse(500);
                             };
                             OutputStream outputStream = exchange.getResponseBody();
-                            String newdata;
                             try {
-                                newdata = data.getResponse();
+                                newdata.getResponse();
                             } catch (IOException e) {
-                                newdata = new ErrorResponse(500).getResponse();
+                                newdata = new ErrorResponse(500);
                             }
 
+                            String response = "";
+
                             try {
-                                exchange.sendResponseHeaders(data.getCode(), newdata.length());
-                                outputStream.write(newdata.getBytes());
+                                response = newdata.getResponse();
+                            } catch (IOException ignored) {}
+
+                            try {
+                                
+                                exchange.sendResponseHeaders(data.getCode(), response.length());
+                                outputStream.write(response.getBytes());
                                 outputStream.flush();
                                 outputStream.close();
                             } catch (IOException e) {

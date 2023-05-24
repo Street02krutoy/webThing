@@ -36,10 +36,14 @@ public class Database {
 
         PrivateUser user = new PrivateUser();
 
+        System.out.println(set.getString("email"));
+
         user.setPassword (set.getString("password"));
         user.setEmail(set.getString("email"));
         user.setNickname(set.getString("nickname"));
         user.setDisplayName (set.getString("display_name"));
+
+        if(user.getEmail() == null) return null;
 
         return user;
     }
@@ -53,6 +57,8 @@ public class Database {
         user.setEmail(set.getString("email"));
         user.setNickname(set.getString("nickname"));
         user.setDisplayName (set.getString("display_name"));
+
+        if(user.getEmail() == null) return null;
 
         return user;
     }
@@ -98,6 +104,7 @@ public class Database {
         user.setDisplayName(nickname);
 
         Database.registerUser(user);
+
 
         return user;
     }

@@ -9,12 +9,15 @@ import com.srit.modules.web.lib.types.JsonResponse;
 import com.srit.modules.web.test.authorizationservice.Database;
 import com.srit.modules.web.test.authorizationservice.model.PrivateUser;
 import com.srit.modules.web.test.authorizationservice.model.PublicUser;
+import org.json.JSONObject;
 
 import java.sql.SQLException;
 import java.util.Objects;
 
 public class AuthorizationModule extends Module {
     public AuthorizationModule(Client client) {
+
+        // GET /user
         addRoute(new Route(client) {
             @Override
             @RouteSettings(method = "GET", name = "/user")
@@ -24,12 +27,12 @@ public class AuthorizationModule extends Module {
                     res.send(new ErrorResponse(401));
                     return;
                 };
-                PublicUser user = getPrivateUserByEmail(token.split(";")[0]).toPublicUser();
+                PrivateUser user = getPrivateUserByEmail(token.split(";")[0]);
                 if(user == null) {
                     res.send(new ErrorResponse(403));
                     return;
                 };
-                res.send(user.toJsonResponse().setCode(200));
+                res.send(user.toPublicUser().toJsonResponse().setCode(200));
             }
         });
 
@@ -38,11 +41,40 @@ public class AuthorizationModule extends Module {
 
             @RouteSettings(method = "POST", name = "/authorize")
             protected void callback(HttpRequest req, HttpResponse res) {
-                String token = authorize(req.getBody().getString("email"), req.getBody().getString("password"));
+
+                JSONObject body = req.getBody();
+
+                String token = authorize(body.getString("email"), body.getString("password"));
+
                 if(token == null) {
                     res.send(new ErrorResponse(401));
                     return;
                 };
+                res.send(new JsonResponse().put("token", token).setCode(200));
+            }
+        });
+
+        addRoute(new Route(client) {
+            @Override
+            @RouteSettings(method = "POST", name = "/register")
+            protected void callback(HttpRequest req, HttpResponse res) {
+                PrivateUser user = null;
+
+                JSONObject body = req.getBody();
+
+                try {
+                    user = Database.registerUser(body.getString("password"), body.getString("email"));
+                } catch (SQLException e) {
+                    System.out.println(e);
+                }
+
+                if(user == null) {
+                    res.send(new ErrorResponse(403));
+                    return;
+                };
+
+                String token = user.getEmail()+";"+user.getPassword();
+
                 res.send(new JsonResponse().put("token", token).setCode(200));
             }
         });
@@ -63,8 +95,13 @@ public class AuthorizationModule extends Module {
 
     private String authorize(String email, String password) {
         try {
-            PublicUser user = Database.getUserByEmail(email);
-            return email+";"+password;
+            PrivateUser user = Database.getUserByEmail(email);
+
+            if(user == null || !Objects.equals(user.getPassword(), password)) {
+                return null;
+            }
+
+            return user.getEmail()+";"+user.getPassword();
         } catch (SQLException e) {
             return null;
         }
